@@ -1,0 +1,41 @@
+server:
+  port: 8081
+  host: http://localhost:8081
+
+spring:
+  application:
+    name: spring-security-jwt
+  datasource:
+    url: jdbc:postgresql://dpg-d0srk8je5dus73bi3d40-a.frankfurt-postgres.render.com/glovo
+    username: glovo_administrator
+    password: 4ME6sGEHEujTB9yMsx9SV1jl9k9MKQKP
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  liquibase:
+    change-log: classpath:/db/changelog-master.yaml
+
+rsa:
+  public-key: classpath:certs/public.pem
+  private-key: classpath:certs/private.pem
+  expiration-in-seconds: 21600
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
+    com:
+      glovodelivery:
+        librarymanagementsystem: INFO

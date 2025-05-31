@@ -18,7 +18,7 @@ public class CustomGrantedAuthoritiesConverter implements Converter<Jwt, Collect
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         String authorities = jwt.getClaim("authorities");
-        Arrays.asList(authorities.split(" ")).forEach(a -> grantedAuthorities.add(new SimpleGrantedAuthority(a)));
+        Arrays.asList(authorities.split(" ")).forEach(a -> grantedAuthorities.add(new SimpleGrantedAuthority(a.toUpperCase())));
 
         return grantedAuthorities;
     }

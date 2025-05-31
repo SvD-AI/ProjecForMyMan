@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: changelog/v1-init-data.sql
       relativeToChangelogFile: true
+  - include:
+      file: changelog/add-roles.sql
+      relativeToChangelogFile: true

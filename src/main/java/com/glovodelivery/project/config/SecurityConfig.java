@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.glovodelivery.project.auth.CustomGrantedAuthoritiesConverter;
 import com.glovodelivery.project.auth.CustomUserDetailsService;
 import com.glovodelivery.project.auth.DelegatedAuthenticationEntryPoint;
+import com.glovodelivery.project.auth.JwtCookieFilter;
 import com.glovodelivery.project.config.properties.RsaKeyProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,69 +40,85 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
-    private final RsaKeyProperties rsaKeyProperties;
-    private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;
+  private final CustomUserDetailsService userDetailsService;
+  private final RsaKeyProperties rsaKeyProperties;
+  private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;
+  private final JwtCookieFilter jwtCookieFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api-docs/**",
-                                "/swagger-ui/**"
-                        ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/users",
-                                "/api/v1/auth/login"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer((resourceServer) -> resourceServer
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .jwt(Customizer.withDefaults()))
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+      .csrf(AbstractHttpConfigurer::disable)
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers(
+          "/api-docs/**",
+          "/swagger-ui/**"
+        ).permitAll()
+        .requestMatchers(
+          "/api/v1/users",
+          "/api/v1/auth/login",
+          "/api/v1/auth/register",
+          "/auth/**",
+          "/api/v1/auth/**",
+          "/login",
+          "/register",
+          "/favicon.ico",
+          "/css/**",
+          "/js/**",
+          "/images/**"
+        ).permitAll()
+        .requestMatchers(
+          "/admin-panel",
+          "/api/v1/admin/**"
+        ).hasRole("ADMIN")
+        .anyRequest().authenticated()
+      )
+      .oauth2ResourceServer(resourceServer -> resourceServer
+        .authenticationEntryPoint(authenticationEntryPoint)
+        .jwt(jwt -> jwt
+          .jwtAuthenticationConverter(jwtAuthenticationConverter())
+        )
+      )
+      .sessionManagement(sessionManagement ->
+        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+      )
+      .addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
+  @Bean
+  public AuthenticationManager authenticationManager() {
+    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    authenticationProvider.setUserDetailsService(userDetailsService);
+    authenticationProvider.setPasswordEncoder(passwordEncoder());
 
-        return new ProviderManager(authenticationProvider);
-    }
+    return new ProviderManager(authenticationProvider);
+  }
 
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        CustomGrantedAuthoritiesConverter grantedAuthoritiesConverter = new CustomGrantedAuthoritiesConverter();
+  @Bean
+  public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    CustomGrantedAuthoritiesConverter grantedAuthoritiesConverter = new CustomGrantedAuthoritiesConverter();
 
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
-    }
+    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+    return jwtAuthenticationConverter;
+  }
 
-    @Bean
-    public JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(rsaKeyProperties.publicKey()).privateKey(rsaKeyProperties.privateKey()).build();
-        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
-    }
+  @Bean
+  public JwtEncoder jwtEncoder() {
+    JWK jwk = new RSAKey.Builder(rsaKeyProperties.publicKey()).privateKey(rsaKeyProperties.privateKey()).build();
+    JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+    return new NimbusJwtEncoder(jwks);
+  }
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
-    }
+  @Bean
+  public JwtDecoder jwtDecoder() {
+    return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
-
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder(10);
+  }
 }

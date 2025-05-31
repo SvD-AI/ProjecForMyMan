@@ -6,34 +6,48 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, Serializable {
 
-    private Long id;
+  private static final long serialVersionUID = 1L;
 
-    private String firstName;
+  private Long id;
+  private String firstName;
+  private String lastName;
+  private String phoneNumber;
+  private Collection<? extends GrantedAuthority> authorities;
+  private String password;
+  private String username;
+  private String address;
+  private boolean accountNonExpired;
+  private boolean accountNonLocked;
+  private boolean credentialsNonExpired;
+  private boolean enabled;
+  private boolean verified;
 
-    private String lastName;
+  @Override
+  public boolean isAccountNonExpired() {
+    return accountNonExpired;
+  }
 
-    private String phoneNumber;
+  @Override
+  public boolean isAccountNonLocked() {
+    return accountNonLocked;
+  }
 
-    private Collection<? extends GrantedAuthority> authorities;
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return credentialsNonExpired;
+  }
 
-    private String password;
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    private String username;
-
-    private boolean accountNonExpired;
-
-    private boolean accountNonLocked;
-
-    private boolean credentialsNonExpired;
-
-    private boolean enabled;
-
-    private boolean verified;
 }

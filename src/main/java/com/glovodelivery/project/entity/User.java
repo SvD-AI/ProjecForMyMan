@@ -19,35 +19,39 @@ import java.util.List;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    @NotNull(message = "First name is required")
-    private String firstName;
+  @NotNull(message = "First name is required")
+  private String firstName;
 
-    @NotNull(message = "Last name is required")
-    private String lastName;
+  @NotNull(message = "Last name is required")
+  private String lastName;
 
-    private String phoneNumber;
+  @Column(nullable = true)
+  private String address;
 
-    @JsonIgnore
-    private String password;
+  @NotNull(message = "Phone is required")
+  private String phoneNumber;
 
-    @NotNull(message = "Username is required")
-    private String username;
+  @JsonIgnore
+  private String password;
 
-    private boolean accountNonExpired;
+  @NotNull(message = "Email is required")
+  private String username;
 
-    private boolean accountNonLocked;
+  private boolean accountNonExpired;
 
-    private boolean credentialsNonExpired;
+  private boolean accountNonLocked;
 
-    private boolean enabled;
+  private boolean credentialsNonExpired;
 
-    private boolean verified;
+  private boolean enabled;
 
-    @ManyToMany(cascade= CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", joinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    }, inverseJoinColumns = {
-            @JoinColumn(name = "role_id", referencedColumnName = "id")
-    })
-    private List<Role> roles = new ArrayList<>();
+  private boolean verified;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "user_role", joinColumns = {
+          @JoinColumn(name = "user_id", referencedColumnName = "id"),
+  }, inverseJoinColumns = {
+          @JoinColumn(name = "role_id", referencedColumnName = "id")
+  })
+  private List<Role> roles = new ArrayList<>();
 }

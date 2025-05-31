@@ -82,7 +82,8 @@ class UserControllerTest {
         UserRegistrationRequest request = new UserRegistrationRequest(
                 "John",
                 "Doe",
-                null,
+                "address",
+                "null",
                 "password",
                 "+2348012345678"
         );

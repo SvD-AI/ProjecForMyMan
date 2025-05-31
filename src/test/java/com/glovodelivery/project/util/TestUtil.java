@@ -38,6 +38,7 @@ public class TestUtil {
         return new UserRegistrationRequest(
                 "John",
                 "Doe",
+                "address",
                 "john.doe@library.com",
                 "password",
                 "+2348012345678"

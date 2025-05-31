@@ -8,5 +8,7 @@ public record AuthenticationResponse(
         Integer expiresIn
 )
 {
-    //
+  public String getToken() {
+    return accessToken;
+  }
 }

@@ -42,7 +42,7 @@ public class AuthenticationServiceTest {
     public void testLogin() {
         AuthenticationRequest request = testUtil.getAuthenticationRequest();
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                request.username(),
+                request.email(),
                 request.password()
         );
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

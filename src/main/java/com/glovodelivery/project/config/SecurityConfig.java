@@ -14,11 +14,9 @@ import com.glovodelivery.project.config.properties.RsaKeyProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -65,12 +63,16 @@ public class SecurityConfig {
           "/favicon.ico",
           "/css/**",
           "/js/**",
-          "/images/**"
-        ).permitAll()
-        .requestMatchers(
+          "/images/**",
           "/admin-panel",
-          "/api/v1/admin/**"
-        ).hasRole("ADMIN")
+          "/api/v1/admin/**",
+          "/api/v1/admin/restaurants",
+          "/api/v1/admin/restaurants/*",
+          "/api/v1/admin/menu-items",
+          "/api/v1/admin/menu-items/*",
+          "/api/v1/admin/orders",
+          "/api/v1/admin/orders/*"
+        ).permitAll()
         .anyRequest().authenticated()
       )
       .oauth2ResourceServer(resourceServer -> resourceServer

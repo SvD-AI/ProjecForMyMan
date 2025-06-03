@@ -36,10 +36,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       )
     );
 
-    // збереження в SecurityContext для сесії
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    // генеруємо токен
     String token = jwtService.generateAccessToken(authentication);
 
     return new AuthenticationResponse(
@@ -52,9 +50,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   @Override
   @Transactional
   public AuthenticationResponse register(UserRegistrationRequest request) {
-    userService.registerUser(request); // делегуємо реєстрацію
+    userService.registerUser(request);
 
-    // Аутентифікація вручну після реєстрації
     Authentication authentication = authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(request.email(), request.password())
     );

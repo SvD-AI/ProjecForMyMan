@@ -10,62 +10,217 @@
 <div class="container mt-5">
     <h1 class="mb-4">Admin Dashboard</h1>
 
-    <!-- Add User Form -->
-    <div class="card mb-4" id="createUserCard" style="display:none;">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span id="formTitle">Create User</span>
-            <button class="btn btn-secondary btn-sm" id="hideCreateUserBtn">Hide</button>
-        </div>
-        <div class="card-body">
-            <form id="userForm">
-                <input type="hidden" id="userId" value="">
-                <div class="row mb-2">
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="First Name" id="firstName" required>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Last Name" id="lastName" required>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <input type="email" class="form-control" placeholder="Email" id="email" required>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" placeholder="Phone Number" id="phoneNumber" required>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <input type="password" class="form-control" placeholder="Password" id="password" required>
-                </div>
-                <div class="mb-2">
-                    <select class="form-select" id="role" required>
-                        <option value="" selected disabled>Select Role</option>
-                        <option value="ROLE_ADMIN">Admin</option>
-                        <option value="ROLE_MANAGER">Manager</option>
-                        <option value="ROLE_COURIER">Courier</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" id="submitBtn">Create</button>
-            </form>
-        </div>
-    </div>
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#usersTab" type="button" role="tab" aria-controls="usersTab" aria-selected="true">Users</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="restaurants-tab" data-bs-toggle="tab" data-bs-target="#restaurantsTab" type="button" role="tab" aria-controls="restaurantsTab" aria-selected="false">Restaurants</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menuTab" type="button" role="tab" aria-controls="menuTab" aria-selected="false">Menu</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#ordersTab" type="button" role="tab" aria-controls="ordersTab" aria-selected="false">Orders</button>
+        </li>
+    </ul>
 
-    <!-- Users Table -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>All Users</span>
-            <button class="btn btn-primary btn-sm" id="showCreateUserBtn">Create New User</button>
+    <div class="tab-content" id="adminTabsContent">
+        <div class="tab-pane fade show active" id="usersTab" role="tabpanel" aria-labelledby="users-tab">
+            <!-- Existing User Form and Table -->
+            <div class="card mb-4" id="createUserCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span id="formTitle">Create User</span>
+                    <button class="btn btn-secondary btn-sm" id="hideCreateUserBtn">Hide</button>
+                </div>
+                <div class="card-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId" value="">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="First Name" id="firstName" required>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Last Name" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <input type="email" class="form-control" placeholder="Email" id="email" required>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Phone Number" id="phoneNumber" required>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <input type="password" class="form-control" placeholder="Password" id="password" required>
+                        </div>
+                        <div class="mb-2">
+                            <select class="form-select" id="role" required>
+                                <option value="" selected disabled>Select Role</option>
+                                <option value="ROLE_ADMIN">Admin</option>
+                                <option value="ROLE_MANAGER">Manager</option>
+                                <option value="ROLE_COURIER">Courier</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Create</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Users Table -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>All Users</span>
+                    <button class="btn btn-primary btn-sm" id="showCreateUserBtn">Create New User</button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover" id="usersTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="user-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-bordered table-hover" id="usersTable">
-                <thead>
-                <tr>
-                    <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th>
-                </tr>
-                </thead>
-                <tbody id="user-table-body"></tbody>
-            </table>
+        <div class="tab-pane fade" id="restaurantsTab" role="tabpanel" aria-labelledby="restaurants-tab">
+            <div class="card mb-4" id="createRestaurantCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span id="restaurantFormTitle">Create Restaurant</span>
+                    <button class="btn btn-secondary btn-sm" id="hideCreateRestaurantBtn">Hide</button>
+                </div>
+                <div class="card-body">
+                    <form id="restaurantForm">
+                        <input type="hidden" id="restaurantId" value="">
+                        <div class="mb-2">
+                            <input type="text" class="form-control" placeholder="Name" id="restaurantName" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" class="form-control" placeholder="City" id="restaurantCity" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="number" step="0.1" class="form-control" placeholder="Rating" id="restaurantRating">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="restaurantSubmitBtn">Create</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>All Restaurants</span>
+                    <button class="btn btn-primary btn-sm" id="showCreateRestaurantBtn">Create New Restaurant</button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover" id="restaurantsTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>City</th><th>Rating</th><th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="restaurant-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="menuTab" role="tabpanel" aria-labelledby="menu-tab">
+            <div class="card mb-4" id="createMenuItemCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span id="menuItemFormTitle">Create Menu Item</span>
+                    <button class="btn btn-secondary btn-sm" id="hideCreateMenuItemBtn">Hide</button>
+                </div>
+                <div class="card-body">
+                    <form id="menuItemForm">
+                        <input type="hidden" id="menuItemId" value="">
+                        <div class="mb-2">
+                            <select class="form-select" id="menuItemRestaurantId" required>
+                                <option value="" selected disabled>Select Restaurant</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" class="form-control" placeholder="Name" id="menuItemName" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="number" step="0.01" class="form-control" placeholder="Price" id="menuItemPrice" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="menuItemSubmitBtn">Create</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>All Menu Items</span>
+                    <button class="btn btn-primary btn-sm" id="showCreateMenuItemBtn">Create New Menu Item</button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Name</th><th>Price</th><th>Restaurant</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menu-item-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="ordersTab" role="tabpanel" aria-labelledby="orders-tab">
+            <div class="card mb-4" id="createOrderCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span id="orderFormTitle">Create Order</span>
+                    <button class="btn btn-secondary btn-sm" id="hideCreateOrderBtn">Hide</button>
+                </div>
+                <div class="card-body">
+                    <form id="orderForm">
+                        <input type="hidden" id="orderId" value="">
+                        <div class="mb-2">
+                            <input type="text" class="form-control" placeholder="Customer Name" id="orderCustomerName" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" class="form-control" placeholder="Address" id="orderAddress" required>
+                        </div>
+                        <div class="mb-2">
+                            <select class="form-select" id="orderRestaurantId" required>
+                                <option value="" selected disabled>Select Restaurant</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <select class="form-select" id="orderCourierId">
+                                <option value="" selected disabled>Select Courier (optional)</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="orderTotalPrice" value="">
+                        <textarea id="orderItems" style="display:none;"></textarea>
+                        <button type="submit" class="btn btn-primary" id="orderSubmitBtn">Create</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>All Orders</span>
+                    <button class="btn btn-primary btn-sm" id="showCreateOrderBtn">Create New Order</button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Address</th>
+                                <th>Restaurant</th>
+                                <th>Courier</th>
+                                <th>Items</th>
+                                <th>Total Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-table-body">
+                            <!-- Orders will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -108,6 +263,13 @@
     </div>
 </div>
 
-<script src="/admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/users.js" defer></script>
+<script src="/restaurants.js" defer></script>
+<script src="/menu-items.js" defer></script>
+<script src="/orders.js" defer></script>
+<script src="/order-items.js" defer></script>
+<script src="/permissions.js" defer></script>
+
 </body>
 </html>

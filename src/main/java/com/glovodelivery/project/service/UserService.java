@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
+    Page<UserResponse> getUsersByRole(String role, Pageable pageable);
 
     UserResponse registerUser(UserRegistrationRequest userRegistrationRequest);
 

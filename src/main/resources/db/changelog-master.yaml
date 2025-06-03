@@ -8,3 +8,9 @@ databaseChangeLog:
   - include:
       file: changelog/add-roles.sql
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v2-init-restaurant.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelog/v3-init-menu-order.sql
+      relativeToChangelogFile: true

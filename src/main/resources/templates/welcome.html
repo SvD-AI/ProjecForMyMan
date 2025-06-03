@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script>
+        function showToken() {
+            const token = localStorage.getItem('jwt');
+            document.getElementById('token').textContent = token && token !== 'undefined'
+                ? token
+                : 'No token found. Please login.';
+        }
+
+        function showSessionId() {
+            fetch('/api/v1/auth', {
+                credentials: 'include'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('session').textContent = data.sessionId || 'No session found.';
+                })
+                .catch(() => {
+                    document.getElementById('session').textContent = 'Error retrieving session.';
+                });
+        }
+
+        window.onload = function () {
+            showToken();
+            showSessionId();
+        };
+    </script>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h1 class="mb-4">Welcome</h1>
+        <p><strong>JWT token:</strong></p>
+        <pre id="token" class="mb-3" style="word-wrap: break-word; background-color: #f8f9fa; padding: 10px; border-radius: 5px;"></pre>
+
+        <p><strong>Session ID:</strong></p>
+        <pre id="session" style="word-wrap: break-word; background-color: #f8f9fa; padding: 10px; border-radius: 5px;"></pre>
+
+        <a href="/login" class="btn btn-primary mt-3">Logout</a>
+    </div>
+</div>
+</body>
+</html>

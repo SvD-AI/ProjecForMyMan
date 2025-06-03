@@ -1,0 +1,46 @@
+<configuration>
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app-log.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/app-log.%d{yyyy-MM-dd}.json</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <logger name="com.glovodelivery.project.controller.AdminController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.AuthenticationController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.DeliveryOrderController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.DishController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.MenuItemController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.RestaurantController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.UserController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <logger name="com.glovodelivery.project.controller.ViewController" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_FILE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="JSON_FILE"/>
+    </root>
+</configuration>

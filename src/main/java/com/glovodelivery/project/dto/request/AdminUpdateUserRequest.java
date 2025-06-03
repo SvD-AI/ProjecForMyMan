@@ -11,5 +11,5 @@ public record AdminUpdateUserRequest(
   @NotNull(message = "Last name is required") String lastName,
   @Email(message = "Email should be valid") String username,
   String phoneNumber,
-  List<RoleName> roles // Оновлення ролей
+  List<RoleName> roles
 ) {}

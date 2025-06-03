@@ -1,31 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
 
-    // Hide create user card initially
     const createUserCard = document.getElementById('createUserCard');
-    createUserCard.style.display = 'none';
+    if (createUserCard) {
+        createUserCard.style.display = 'none';
+    }
 
-    // Show create user card on button click
     const showCreateUserBtn = document.getElementById('showCreateUserBtn');
     const hideCreateUserBtn = document.getElementById('hideCreateUserBtn');
     const formTitle = document.getElementById('formTitle');
     const submitBtn = document.getElementById('submitBtn');
     const userIdInput = document.getElementById('userId');
 
-    showCreateUserBtn.addEventListener('click', () => {
-        createUserCard.style.display = 'block';
-        showCreateUserBtn.style.display = 'none';
-        formTitle.textContent = 'Create User';
-        submitBtn.textContent = 'Create';
-        userIdInput.value = '';
-        clearForm();
-    });
+    if (showCreateUserBtn && createUserCard && hideCreateUserBtn) {
+        showCreateUserBtn.addEventListener('click', () => {
+            createUserCard.style.display = 'block';
+            showCreateUserBtn.style.display = 'none';
+            formTitle.textContent = 'Create User';
+            submitBtn.textContent = 'Create';
+            userIdInput.value = '';
+            clearForm();
+        });
 
-    hideCreateUserBtn.addEventListener('click', () => {
-        createUserCard.style.display = 'none';
-        showCreateUserBtn.style.display = 'inline-block';
-        clearForm();
-    });
+        hideCreateUserBtn.addEventListener('click', () => {
+            createUserCard.style.display = 'none';
+            showCreateUserBtn.style.display = 'inline-block';
+            clearForm();
+        });
+    }
 
     function clearForm() {
         document.getElementById('firstName').value = '';
@@ -52,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let response;
             if (id) {
-                // Update existing user
                 response = await fetch(`/api/v1/admin/users/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -68,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     credentials: "include"
                 });
             } else {
-                // Create new user
                 response = await fetch('/api/v1/admin/create-user', {
                     method: 'POST',
                     headers: {
@@ -143,126 +143,47 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Request failed");
         }
     };
-});
 
-document.getElementById("editUserForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
+    async function loadUsers() {
+        try {
+            const response = await fetch("/api/v1/admin/users", {
+                method: "GET",
+                credentials: "include"
+            });
 
-    const id = document.getElementById("editUserId").value;
-    const data = {
-        firstName: document.getElementById("editFirstName").value,
-        lastName: document.getElementById("editLastName").value,
-        username: document.getElementById("editEmail").value,
-        phoneNumber: document.getElementById("editPhoneNumber").value,
-        roles: [document.getElementById("editRole").value]
-    };
+            if (!response.ok) {
+                throw new Error("Failed to load users");
+            }
 
-    try {
-        const response = await fetch(`/api/v1/admin/users/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify(data)
-        });
+            const pageData = await response.json();
+            const users = pageData.content;
 
-        if (response.ok) {
-            bootstrap.Modal.getInstance(document.getElementById("editUserModal")).hide();
-            loadUsers();
-        } else {
-            const error = await response.json();
-            alert("Error updating user: " + error.message);
+            renderUsers(users);
+
+        } catch (error) {
+            console.error(error);
         }
-    } catch (err) {
-        alert("Request failed");
+    }
+
+    function renderUsers(users) {
+        const tbody = document.getElementById("user-table-body");
+        tbody.innerHTML = "";
+        users.forEach(user => {
+            const roles = user.roles.map(r => r.name).join(", ");
+            const row = `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.username}</td>
+                    <td>${user.phoneNumber || ""}</td>
+                    <td>${roles}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-2" onclick="openEditModal(${user.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML("beforeend", row);
+        });
     }
 });
-
-async function loadUsers() {
-    try {
-        const response = await fetch("/api/v1/admin/users", {
-            method: "GET",
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to load users");
-        }
-
-        const pageData = await response.json();
-        const users = pageData.content;
-
-        renderUsers(users);
-
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function renderUsers(users) {
-    const tbody = document.getElementById("user-table-body");
-    tbody.innerHTML = "";
-    users.forEach(user => {
-        const roles = user.roles.map(r => r.name).join(", ");
-        const row = `
-            <tr>
-                <td>${user.id}</td>
-                <td>${user.firstName} ${user.lastName}</td>
-                <td>${user.username}</td>
-                <td>${user.phoneNumber || ""}</td>
-                <td>${roles}</td>
-                <td>
-                    <button class="btn btn-sm btn-warning me-2" onclick="openEditModal(${user.id})">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>
-                </td>
-            </tr>
-        `;
-        tbody.insertAdjacentHTML("beforeend", row);
-    });
-}
-
-async function openEditModal(userId) {
-    try {
-        const response = await fetch(`/api/v1/admin/users/${userId}`, {
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to load user");
-        }
-
-        const user = await response.json();
-
-        document.getElementById("editUserId").value = user.id;
-        document.getElementById("editFirstName").value = user.firstName;
-        document.getElementById("editLastName").value = user.lastName;
-        document.getElementById("editEmail").value = user.username;
-        document.getElementById("editPhoneNumber").value = user.phoneNumber;
-        document.getElementById("editRole").value = user.roles[0]?.name.toUpperCase() || '';
-
-        const modal = new bootstrap.Modal(document.getElementById("editUserModal"));
-        modal.show();
-    } catch (err) {
-        alert("Failed to load user data");
-    }
-}
-
-async function deleteUser(userId) {
-    if (!confirm("Are you sure you want to delete this user?")) return;
-
-    try {
-        const response = await fetch(`/api/v1/admin/users/${userId}`, {
-            method: "DELETE",
-            credentials: "include"
-        });
-
-        if (response.ok) {
-            loadUsers();
-        } else {
-            alert("Error deleting user");
-        }
-    } catch (err) {
-        alert("Request failed");
-    }
-}

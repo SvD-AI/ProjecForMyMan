@@ -64,8 +64,6 @@ public class UserServiceImpl implements UserService {
 
       User savedUser = userRepository.save(user);
 
-      //TODO: send verification email to savedUser
-
       return Mapper.toUserResponse(savedUser);
   }
 
@@ -99,8 +97,27 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<UserResponse> getAllUsers(Pageable pageable){
+      User currentUser = getCurrentUser();
+      if (hasRole(currentUser, com.glovodelivery.project.enums.RoleName.ROLE_MANAGER)) {
+          return userRepository.findAllCouriers().stream()
+                  .map(Mapper::toUserResponse)
+                  .collect(java.util.stream.Collectors.collectingAndThen(
+                          java.util.stream.Collectors.toList(),
+                          list -> new org.springframework.data.domain.PageImpl<>(list, pageable, list.size())
+                  ));
+      }
 
       return userRepository.findAll(pageable).map(Mapper::toUserResponse);
+  }
+
+  private User getCurrentUser() {
+      org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+      return userRepository.findByUsername(auth.getName())
+              .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"));
+  }
+
+  private boolean hasRole(User user, com.glovodelivery.project.enums.RoleName roleName) {
+      return user.getRoles().stream().anyMatch(r -> r.getName().equals(roleName.name()));
   }
 
   @Override
@@ -120,10 +137,12 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserResponse updateUserByAdmin(Long userId, AdminUpdateUserRequest request) {
+    User currentUser = getCurrentUser();
     User user = userRepository.findById(userId)
       .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-    // Перевірка унікальності email (username) якщо змінився
+    ensureManagerCanModifyOnlyCouriers(currentUser, user);
+
     if (!user.getUsername().equals(request.username()) && userRepository.existsByUsername(request.username())) {
       throw new EntityExistsException("User already exists with email: " + request.username());
     }
@@ -133,7 +152,6 @@ public class UserServiceImpl implements UserService {
     user.setUsername(request.username());
     user.setPhoneNumber(request.phoneNumber());
 
-    // Оновлення ролей
     if (request.roles() != null && !request.roles().isEmpty()) {
       List<Role> newRoles = new ArrayList<>();
       for (RoleName roleName : request.roles()) {
@@ -150,10 +168,40 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void deleteUser(Long userId) {
-    if (!userRepository.existsById(userId)) {
-      throw new EntityNotFoundException("User not found");
-    }
+    User currentUser = getCurrentUser();
+    User user = userRepository.findById(userId)
+      .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+    ensureManagerCanModifyOnlyCouriers(currentUser, user);
+
     userRepository.deleteById(userId);
+  }
+
+  private void ensureManagerCanModifyOnlyCouriers(User currentUser, User targetUser) {
+    if (hasRole(currentUser, RoleName.ROLE_MANAGER) &&
+        targetUser.getRoles().stream().noneMatch(role -> role.getName().equals(RoleName.ROLE_COURIER.name()))) {
+        throw new org.springframework.security.access.AccessDeniedException("Managers can only modify couriers.");
+    }
+  }
+
+  @Override
+  public Page<UserResponse> getUsersByRole(String role, Pageable pageable) {
+      if (role == null || role.isBlank()) {
+          return userRepository.findAll(pageable)
+                  .map(Mapper::toUserResponse);
+      }
+
+      RoleName roleName;
+      try {
+          roleName = RoleName.valueOf(role);
+      } catch (IllegalArgumentException e) {
+          throw new IllegalArgumentException("Invalid role: " + role);
+      }
+
+      Role roleEntity = roleService.getRoleByName(roleName);
+      Page<User> users = userRepository.findByRolesContaining(roleEntity, pageable);
+
+      return users.map(Mapper::toUserResponse);
   }
 
 }

@@ -7,7 +7,7 @@ public enum RoleName {
   ROLE_ADMIN("role_admin"),
   ROLE_MANAGER("role_manager"),
   ROLE_COURIER("role_courier"),
-  ROLE_CUSTOMER("role_customer");  // нова роль
+  ROLE_CUSTOMER("role_customer"); 
 
   private final String value;
 

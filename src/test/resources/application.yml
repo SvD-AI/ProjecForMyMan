@@ -1,15 +1,12 @@
-server:
-  port: 8088
-  host: localhost
-
 spring:
   application:
     name: spring-security-jwt
   datasource:
-    url: jdbc:postgresql://dpg-d0srk8je5dus73bi3d40-a.frankfurt-postgres.render.com/glovo
+    url: jdbc:postgresql://dpg-d0t57163jp1c73e7v9rg-a/glovo_na6p
     username: glovo_administrator
-    password: 4ME6sGEHEujTB9yMsx9SV1jl9k9MKQKP
+    password: iYLdDvrtbDvhuNK8GkSJG9xzmxKBEtV6
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
     properties:
@@ -20,7 +17,6 @@ spring:
       ddl-auto: update
   liquibase:
     change-log: classpath:/db/changelog-master.yaml
-
 
 rsa:
   public-key: classpath:certs/public.pem

@@ -28,10 +28,25 @@ public class WithMockUserSecurityContextFactory implements WithSecurityContextFa
                 .collect(Collectors.toList());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                new CustomUserDetails(1L, "John", "Doe", user.phone(), grantedAuthorities, null, user.email(), true, true, true, true, true),
-                null,
-                grantedAuthorities
+            new CustomUserDetails(
+                1L,
+                "John",
+                "Doe",
+                user.phone(),
+                grantedAuthorities,
+                (String) null,
+                user.email(),
+                null, 
+                true,
+                true,
+                true,
+                true,
+                true
+            ),
+            null,
+            grantedAuthorities
         );
+
 
         securityContext.setAuthentication(authentication);
 

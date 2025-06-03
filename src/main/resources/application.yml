@@ -6,7 +6,7 @@ spring:
   application:
     name: spring-security-jwt
   datasource:
-    url: jdbc:postgresql://dpg-d0t57163jp1c73e7v9rg-a.frankfurt-postgres.render.com/glovo_na6p
+    url: jdbc:postgresql://dpg-d0t57163jp1c73e7v9rg-a/glovo_na6p
     username: glovo_administrator
     password: iYLdDvrtbDvhuNK8GkSJG9xzmxKBEtV6
     driver-class-name: org.postgresql.Driver

@@ -22,16 +22,3 @@ rsa:
   public-key: classpath:certs/public.pem
   private-key: classpath:certs/private.pem
   expiration-in-seconds: 21600
-
-springdoc:
-  api-docs:
-    path: /api-docs
-
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
-    com:
-      glovodelivery:
-        librarymanagementsystem: INFO
